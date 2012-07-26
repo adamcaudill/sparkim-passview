@@ -10,35 +10,42 @@ namespace sparkim_passview
   {
     public static void Main(string[] args)
     {
-      Console.WriteLine("Spark IM Password Decrypter - Copyright 2012 Adam Caudill <adam@adamcaudill.com>");
-      Console.WriteLine(string.Format("v{0} - https://github.com/adamcaudill/sparkim-passview", 
-        Assembly.GetExecutingAssembly().GetName().Version));
-      Console.WriteLine();
-
-      string search;
-      if (args.Length == 0)
+      try
       {
-        search = @"C:\";
-      }
-      else
-      {
-        search = string.Format(@"\\{0}\c$\", args[0]);
-      }
+        Console.WriteLine("Spark IM Password Decrypter - Copyright 2012 Adam Caudill <adam@adamcaudill.com>");
+        Console.WriteLine(string.Format("v{0} - https://github.com/adamcaudill/sparkim-passview",
+          Assembly.GetExecutingAssembly().GetName().Version));
+        Console.WriteLine();
 
-      var paths = _GetPaths(search);
-      foreach (var path in paths)
-      {
-        var settings = new Settings(path);
-        var password = settings.GetPassword();
-
-        if (password != null)
+        string search;
+        if (args.Length == 0)
         {
-          Console.WriteLine(string.Format("Result! User: '{0}' Pass: '{1}'", settings.GetUser(), 
-            Encryption.Decrypt(password)));
+          search = @"C:\";
         }
-      }
+        else
+        {
+          search = string.Format(@"\\{0}\c$\", args[0]);
+        }
 
-      Console.WriteLine("Done.");
+        var paths = _GetPaths(search);
+        foreach (var path in paths)
+        {
+          var settings = new Settings(path);
+          var password = settings.GetPassword();
+
+          if (password != null)
+          {
+            Console.WriteLine(string.Format("Result! User: '{0}' Pass: '{1}'", settings.GetUser(),
+              Encryption.Decrypt(password)));
+          }
+        }
+
+        Console.WriteLine("Done.");
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
     }
 
     private static List<string> _GetPaths(string search)
