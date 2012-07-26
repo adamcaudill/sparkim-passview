@@ -28,6 +28,9 @@ namespace sparkim_passview
         }
 
         var paths = _GetPaths(search);
+
+        Console.WriteLine(string.Format("Found {0} config files...", paths.Count));
+
         foreach (var path in paths)
         {
           var settings = new Settings(path);
@@ -35,8 +38,16 @@ namespace sparkim_passview
 
           if (password != null)
           {
-            Console.WriteLine(string.Format("Result! User: '{0}' Pass: '{1}'", settings.GetUser(),
-              Encryption.Decrypt(password)));
+            try
+            {
+              Console.WriteLine(string.Format("Result! User: '{0}' Pass: '{1}'", 
+                settings.GetUser(), Encryption.Decrypt(password)));
+            }
+            catch (Exception ex)
+            {
+              Console.WriteLine(string.Format("Error! User: '{0}' Error: '{1}'", 
+                settings.GetUser(), ex.Message));
+            }
           }
         }
 
@@ -50,25 +61,39 @@ namespace sparkim_passview
 
     private static List<string> _GetPaths(string search)
     {
-      const string FILE_NAME = @"AppData\Roaming\Spark\spark.properties";
+      const string WIN7_FILE_NAME = @"AppData\Roaming\Spark\spark.properties";
+      const string XP_FILE_NAME = @"Spark\spark.properties";
       var ret = new List<string>();
-      string working;
 
       //search "Users"
-      working = Path.Combine(search, "Users");
-      if (Directory.Exists(working))
-      {
-        foreach (var path in Directory.GetDirectories(working))
-        {
-          var file = Path.Combine(path, FILE_NAME);
-          if (File.Exists(file))
-          {
-            ret.Add(file);
-          }
-        }
-      }
+      _SearchPaths(Path.Combine(search, "Users"), WIN7_FILE_NAME, ret);
+
+      //search "Documents and Settings"
+      _SearchPaths(Path.Combine(search, "Documents and Settings"), XP_FILE_NAME, ret);
 
       return ret;
+    }
+
+    private static void _SearchPaths(string search, string fineName, List<string> ret)
+    {
+      if (Directory.Exists(search))
+      {
+        try
+        {
+          foreach (var path in Directory.GetDirectories(search))
+          {
+            var file = Path.Combine(path, fineName);
+            if (File.Exists(file))
+            {
+              ret.Add(file);
+            }
+          }
+        }
+        catch (UnauthorizedAccessException)
+        {
+          //gooble gooble
+        }
+      }
     }
   }
 }

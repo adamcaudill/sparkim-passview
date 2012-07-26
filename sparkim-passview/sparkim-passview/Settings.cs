@@ -50,6 +50,8 @@ namespace sparkim_passview
 
       if (_data.ContainsKey(key))
         return _data[key];
+      else if (_data.ContainsKey("password"))
+        return _data["password"]; //some do this way - diff version?
       else
         return null;
     }

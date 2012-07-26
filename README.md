@@ -12,8 +12,6 @@ When accessing remote systems, this application will attempt to use the remote a
 
 ###Assumptions
 
-This tool assumes that it will be run on Windows Vista or newer - older systems (such as Windows XP) use a different path structure. Supporting this would be fairly trivial, but it goes beyond my current needs.
-
 This is a .NET project, so thus requires the framework to be installed to work. To maximize compatibility, it's targeting the 2.0 framework.
 
 ###Warning
